@@ -20,7 +20,7 @@ It was implemented with the same idea used by [ConcurrentDictionary](https://doc
         // Fetch data from elsewhere and return it ...
     });
 
-    var item = await cache.GetOrCreateAsync<TItem>("<key>", entry =>
+    var item = await cache.GetOrCreateAsync<TItem>("<key>", async entry =>
     {
         // Fetch data from elsewhere and return it ...
     });
