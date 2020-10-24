@@ -4,7 +4,7 @@ A simple wrapper over MemoryCache to prevent concurrent cache missing.
 
 ## Purpose
 
-The Microsoft [MemoryCache](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-3.1) API provides the ability to cache locally, however it does not stop multiple threads concurrently calling `GetOrCreate()` method (at the moment this was written), which can lead to multiple cache missing and duplicated data fetching.
+The Microsoft [MemoryCache](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-3.1) API provides the ability to cache locally, however it does not guarantee the atomicity when multiple threads call `GetOrCreate()` with the same entry (at the moment this was written), which can lead to multiple cache missing and duplicated data fetching.
 
 ## How it works
 
