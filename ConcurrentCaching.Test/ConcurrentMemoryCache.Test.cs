@@ -8,7 +8,7 @@ namespace ConcurrentCaching.Test
     public class ConcurrentMemoryCacheTests
     {
         [Fact]
-        public async void FetchCacheOnceForSingleEntry()
+        public async void FetchWithSingleEntry()
         {
             var cacheEntryOptions = new MemoryCacheOptions();
             var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
@@ -27,7 +27,7 @@ namespace ConcurrentCaching.Test
         }
 
         [Fact]
-        public async void FetchCacheAsyncOnceForSingleEntry()
+        public async void FetchAsyncWithSingleEntry()
         {
             var cacheEntryOptions = new MemoryCacheOptions();
             var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
@@ -52,7 +52,7 @@ namespace ConcurrentCaching.Test
         }
 
         [Fact]
-        public async void FetchCacheForMultipleEntries()
+        public async void FetchWithMultipleEntries()
         {
             var cacheEntryOptions = new MemoryCacheOptions();
             var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
@@ -70,7 +70,7 @@ namespace ConcurrentCaching.Test
         }
 
         [Fact]
-        public async void FetchCacheAsyncForMultipleEntries()
+        public async void FetchAsyncWithMultipleEntries()
         {
             var cacheEntryOptions = new MemoryCacheOptions();
             var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
