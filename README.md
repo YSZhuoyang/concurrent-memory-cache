@@ -12,15 +12,26 @@ It was implemented based on the same idea used by [ConcurrentDictionary](https:/
 
 ## How to use
 
-    var cacheEntryOptions = new MemoryCacheOptions(); // Setup e.g. max cache limit for LRU
-    var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
+1. Install package:
 
-    var item = cache.GetOrCreate<TItem>("<key>", entry =>
-    {
-        // Fetch data from elsewhere and return it ...
-    });
+       dotnet add package ConcurrentCaching
 
-    var item = await cache.GetOrCreateAsync<TItem>("<key>", async entry =>
-    {
-        // Fetch data from elsewhere and return it ...
-    });
+2. Inject caching service:
+
+       services.AddMemoryCache(options =>
+       {
+           //... Setup e.g. max cache limit for LRU
+       });
+       services.AddSingleton<IConcurrentMemoryCache, ConcurrentMemoryCache>();
+
+3. Fetch data from cache:
+
+       var item = cache.GetOrCreate<TItem>("<key>", entry =>
+       {
+           // Fetch data from elsewhere and return it ...
+       });
+
+       var item = await cache.GetOrCreateAsync<TItem>("<key>", async entry =>
+       {
+           // Fetch data from elsewhere and return it ...
+       });
