@@ -1,0 +1,27 @@
+name: Build
+
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET SDK # For running tests
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.103
+
+    - name: Run Unit Test
+      working-directory: ./ConcurrentCaching.Test
+      run: dotnet test --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
+
+    - name: Publish Test Results to Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: "./ConcurrentCaching.Test/TestResults/*/coverage.info"
