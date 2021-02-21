@@ -1,5 +1,8 @@
 # concurrent-memory-cache
 
+[![Build](https://github.com/YSZhuoyang/concurrent-memory-cache/actions/workflows/ci.yml/badge.svg)](https://github.com/YSZhuoyang/concurrent-memory-cache/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/YSZhuoyang/concurrent-memory-cache/badge.svg)](https://coveralls.io/github/YSZhuoyang/concurrent-memory-cache)
+
 A simple wrapper over MemoryCache to prevent concurrent cache missing.
 
 ## Purpose
