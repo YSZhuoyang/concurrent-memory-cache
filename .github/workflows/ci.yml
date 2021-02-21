@@ -23,7 +23,7 @@ jobs:
     - name: Get Path To LCOV File
       id: get_lcov_path
       shell: bash
-      run: printf '::set-output name=lcov_path::%s\n' TestResults/*/coverage.info
+      run: printf '::set-output name=lcov_path::%s\n' ConcurrentCaching.Test/TestResults/*/coverage.info
 
     - name: Publish Test Results to Coveralls
       uses: coverallsapp/github-action@master
