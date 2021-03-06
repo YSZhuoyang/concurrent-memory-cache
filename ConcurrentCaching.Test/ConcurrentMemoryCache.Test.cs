@@ -36,7 +36,11 @@ namespace ConcurrentCaching.Test
 
             for (var i = 0; i < 10; i++)
             {
-                tasks.Add(Task.Run(() => cache.GetOrCreateAsync("key", entry => Task.FromResult(1))));
+                tasks.Add(Task.Run(() => cache.GetOrCreateAsync("key", async entry =>
+                {
+                    await Task.Delay(100 - i * 5);
+                    return i;
+                })));
             }
 
             await Task.WhenAll(tasks);
