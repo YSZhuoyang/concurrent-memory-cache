@@ -31,7 +31,9 @@ namespace ConcurrentCaching.Test
 
             timer.Stop();
 
-            Assert.True(timer.Elapsed.TotalMilliseconds < 2000);
+            Console.WriteLine(timer.Elapsed.TotalMilliseconds);
+
+            Assert.True(timer.Elapsed.TotalMilliseconds < 10000);
         }
 
         [Fact]
