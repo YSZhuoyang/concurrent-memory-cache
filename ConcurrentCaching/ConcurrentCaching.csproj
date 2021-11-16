@@ -5,11 +5,14 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 
     <PackageId>ConcurrentCaching</PackageId>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <Version>0.2.0</Version>
     <Authors>OscarYu</Authors>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="/"/>
+
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="6.0.0" />
   </ItemGroup>
 
