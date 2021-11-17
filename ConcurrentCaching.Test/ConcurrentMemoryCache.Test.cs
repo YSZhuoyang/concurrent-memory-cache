@@ -12,112 +12,125 @@ namespace ConcurrentCaching.Test
         [Fact]
         public async void BenchmarkConcurrentFetchWithDifferentEntries()
         {
-            var cacheEntryOptions = new MemoryCacheOptions();
-            var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
-            var tasks = new List<Task>();
-
-            var timer = Stopwatch.StartNew();
-
-            for (var i = 0; i < 200000; i++)
+            var options = new MemoryCacheOptions()
             {
-                tasks.Add(Task.Run(() => cache.GetOrCreateAsync<int>(Guid.NewGuid().ToString(), async entry =>
+                SizeLimit = 200000
+            };
+            using (var memoryCache = new MemoryCache(options))
+            {
+                var cache = new ConcurrentMemoryCache(memoryCache);
+                var tasks = new List<Task>();
+
+                var timer = Stopwatch.StartNew();
+
+                for (var i = 0; i < 200000; i++)
                 {
-                    await Task.Delay(400);
-                    return i;
-                })));
+                    tasks.Add(Task.Run(() => cache.GetOrCreateAsync<int>(Guid.NewGuid().ToString(), async entry =>
+                    {
+                        entry.SetSize(1);
+                        await Task.Delay(400);
+                        return i;
+                    })));
+                }
+
+                await Task.WhenAll(tasks);
+
+                timer.Stop();
+
+                Assert.True(timer.Elapsed.TotalMilliseconds < 10000);
             }
-
-            await Task.WhenAll(tasks);
-
-            timer.Stop();
-
-            Console.WriteLine(timer.Elapsed.TotalMilliseconds);
-
-            Assert.True(timer.Elapsed.TotalMilliseconds < 10000);
         }
 
         [Fact]
         public async void FetchWithSingleEntry()
         {
-            var cacheEntryOptions = new MemoryCacheOptions();
-            var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
-            var results = new List<int>();
-            var tasks = new List<Task>();
-
-            for (var i = 0; i < 10; i++)
+            using (var memoryCache = new MemoryCache(new MemoryCacheOptions()))
             {
-                tasks.Add(Task.Run(() => results.Add(cache.GetOrCreate<int>("key1", entry => i))));
+                var cache = new ConcurrentMemoryCache(memoryCache);
+                var results = new List<int>();
+                var tasks = new List<Task>();
+
+                for (var i = 0; i < 10; i++)
+                {
+                    tasks.Add(Task.Run(() => results.Add(cache.GetOrCreate<int>("key1", entry => i))));
+                }
+
+                await Task.WhenAll(tasks);
+
+                var cachedItem = results[0];
+                Assert.All(results, res => Assert.Equal(cachedItem, res));
             }
-
-            await Task.WhenAll(tasks);
-
-            var cachedItem = results[0];
-            Assert.All(results, res => Assert.Equal(cachedItem, res));
         }
 
         [Fact]
         public async void FetchAsyncWithSingleEntry()
         {
-            var cacheEntryOptions = new MemoryCacheOptions();
-            var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
-            var results = new List<int>();
-            var tasks = new List<Task<int>>();
-
-            for (var i = 0; i < 10; i++)
+            using (var memoryCache = new MemoryCache(new MemoryCacheOptions()))
             {
-                tasks.Add(Task.Run(() => cache.GetOrCreateAsync("key2", async entry =>
+                var cache = new ConcurrentMemoryCache(memoryCache);
+                var results = new List<int>();
+                var tasks = new List<Task<int>>();
+
+                for (var i = 0; i < 10; i++)
                 {
-                    await Task.Delay(100 - i * 5);
-                    return i;
-                })));
+                    tasks.Add(Task.Run(() => cache.GetOrCreateAsync("key2", async entry =>
+                    {
+                        await Task.Delay(100 - i * 5);
+                        return i;
+                    })));
+                }
+
+                await Task.WhenAll(tasks);
+
+                for (int i = 0; i < tasks.Count; i++)
+                {
+                    object res = await tasks[i];
+                    results.Add((int)res);
+                }
+
+                var cachedItem = results[0];
+                Assert.All(results, res => Assert.Equal(cachedItem, res));
             }
-
-            await Task.WhenAll(tasks);
-
-            for (int i = 0; i < tasks.Count; i++)
-            {
-                object res = await tasks[i];
-                results.Add((int)res);
-            }
-
-            var cachedItem = results[0];
-            Assert.All(results, res => Assert.Equal(cachedItem, res));
         }
 
         [Fact]
         public async void FetchWithMultipleEntries()
         {
-            var cacheEntryOptions = new MemoryCacheOptions();
-            var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
-            var tasks = new List<Task>();
-
-            for (var i = 0; i < 10; i++)
+            using (var memoryCache = new MemoryCache(new MemoryCacheOptions()))
             {
-                tasks.Add(Task.Run(() =>
+                var cache = new ConcurrentMemoryCache(memoryCache);
+                var tasks = new List<Task>();
+
+                for (var i = 0; i < 10; i++)
                 {
-                    var res = cache.GetOrCreate($"key1-{i}", entry => i);
-                    Assert.Equal(i, res);
-                }));
+                    tasks.Add(Task.Run(() =>
+                    {
+                        var res = cache.GetOrCreate($"key1-{i}", entry => i);
+                        Assert.Equal(i, res);
+                    }));
+                }
+                await Task.WhenAll(tasks);
             }
-            await Task.WhenAll(tasks);
         }
 
         [Fact]
         public async void FetchAsyncWithMultipleEntries()
         {
-            var cacheEntryOptions = new MemoryCacheOptions();
-            var cache = new ConcurrentMemoryCache(new MemoryCache(cacheEntryOptions));
-            var tasks = new List<Task>();
-
-            for (var i = 0; i < 10; i++)
+            using (var memoryCache = new MemoryCache(new MemoryCacheOptions()))
             {
-                tasks.Add(Task.Run(async () =>
+                var cache = new ConcurrentMemoryCache(memoryCache);
+                var tasks = new List<Task>();
+
+                for (var i = 0; i < 10; i++)
                 {
-                    var res = await cache.GetOrCreateAsync($"key2-{i}", entry => Task.FromResult(i));
-                    Assert.Equal(i, res);
-                }));
+                    tasks.Add(Task.Run(async () =>
+                    {
+                        var res = await cache.GetOrCreateAsync($"key2-{i}", entry => Task.FromResult(i));
+                        Assert.Equal(i, res);
+                    }));
+                }
+                await Task.WhenAll(tasks);
             }
-            await Task.WhenAll(tasks);
         }
     }
 }
