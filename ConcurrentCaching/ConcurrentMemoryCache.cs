@@ -6,7 +6,9 @@ namespace ConcurrentCaching
 {
     public interface IConcurrentMemoryCache
     {
-        object GetOrCreateItem(string key, Func<ICacheEntry, object> factory);
+        TItem GetOrCreate<TItem>(string key, Func<ICacheEntry, TItem> factory);
+
+        Task<TItem> GetOrCreateAsync<TItem>(string key, Func<ICacheEntry, Task<TItem>> factory);
     }
 
     public class ConcurrentMemoryCache : IConcurrentMemoryCache
@@ -22,7 +24,17 @@ namespace ConcurrentCaching
             for (int i = 0; i < numSegments; i++) segments[i] = new object();
         }
 
-        public object GetOrCreateItem(string key, Func<ICacheEntry, object> factory)
+        public Task<TItem> GetOrCreateAsync<TItem>(string key, Func<ICacheEntry, Task<TItem>> factory)
+        {
+            return (Task<TItem>)GetOrCreate(key, (Func<ICacheEntry, object>)(key => factory(key)));
+        }
+
+        public TItem GetOrCreate<TItem>(string key, Func<ICacheEntry, TItem> factory)
+        {
+            return (TItem)GetOrCreate(key, (Func<ICacheEntry, object>)(key => factory(key)));
+        }
+
+        private object GetOrCreate(string key, Func<ICacheEntry, object> factory)
         {
             if (_localCache.TryGetValue(key, out var value)) return value;
 
@@ -41,19 +53,6 @@ namespace ConcurrentCaching
         private int getSegmentNo(string key)
         {
             return (key.GetHashCode() & 0x7fffffff) % segments.Length;
-        }
-    }
-
-    public static class ConcurrentMemoryCacheExtension
-    {
-        public static TItem GetOrCreate<TItem>(this IConcurrentMemoryCache cache, string key, Func<ICacheEntry, TItem> factory)
-        {
-            return (TItem)cache.GetOrCreateItem(key, key => factory(key));
-        }
-
-        public static Task<TItem> GetOrCreateAsync<TItem>(this IConcurrentMemoryCache cache, string key, Func<ICacheEntry, Task<TItem>> factory)
-        {
-            return (Task<TItem>)cache.GetOrCreateItem(key, key => factory(key));
         }
     }
 }
