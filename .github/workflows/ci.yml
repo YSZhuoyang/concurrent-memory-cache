@@ -26,4 +26,4 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ steps.get_lcov_path.outputs.lcov_path }}
         format: lcov
-        base-path: ConcurrentCaching.Test/TestResults
+        base-path: "ConcurrentCaching.Test/TestResults"
