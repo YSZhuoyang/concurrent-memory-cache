@@ -20,9 +20,14 @@ jobs:
       working-directory: ./ConcurrentCaching.Test
       run: dotnet test --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=lcov
 
+    - name: Get Path To LCOV File
+      id: get_lcov_path
+      shell: bash
+      run: printf '::set-output name=lcov_path::%s\n' ConcurrentCaching.Test/TestResults/*/coverage.info
+
     - name: Publish Test Results to Coveralls
       uses: coverallsapp/github-action@v2
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ steps.get_lcov_path.outputs.lcov_path }}
         format: lcov
-        base-path: "ConcurrentCaching.Test/TestResults"
