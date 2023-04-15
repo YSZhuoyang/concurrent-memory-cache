@@ -25,4 +25,4 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         format: lcov
-        base-path: ConcurrentCaching.Test/TestResults
+        base-path: "ConcurrentCaching.Test/TestResults"
