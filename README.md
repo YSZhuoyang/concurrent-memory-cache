@@ -3,11 +3,11 @@
 [![Build](https://github.com/YSZhuoyang/concurrent-memory-cache/actions/workflows/ci.yml/badge.svg)](https://github.com/YSZhuoyang/concurrent-memory-cache/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/YSZhuoyang/concurrent-memory-cache/badge.svg)](https://coveralls.io/github/YSZhuoyang/concurrent-memory-cache)
 
+Updates: IMemoryCache has been updated to support [concurrent async operations](https://learn.microsoft.com/en-us/dotnet/core/extensions/caching#additional-extension-methods), thus this library is not necessary anymore.
+
 A simple wrapper over MemoryCache to prevent concurrent cache missing.
 
 ## Purpose
-
-Updates: IMemoryCache has been updated to support [concurrent async operations](https://learn.microsoft.com/en-us/dotnet/core/extensions/caching#additional-extension-methods), thus this library is not necessary anymore.
 
 The Microsoft [MemoryCache](https://docs.microsoft.com/en-us/aspnet/core/performance/caching/memory?view=aspnetcore-5.0) API provides the ability to cache locally, however it does not guarantee the [atomicity](https://github.com/dotnet/runtime/issues/36499) when multiple threads call `GetOrCreate()` with the same entry (at the moment this was written), which can lead to multiple cache missing and duplicated data fetching.
 
